@@ -5,10 +5,8 @@ import com.borris.context.ApplicationContext;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 
 public class ContextLoaderListener implements ServletContextListener {
     @Override
