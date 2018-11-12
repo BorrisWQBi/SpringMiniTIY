@@ -4,10 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.URISyntaxException;
 import java.util.*;
 
 public class ApplicationContext {
@@ -51,37 +49,5 @@ public class ApplicationContext {
 
     public static Object getBean(String beanName) {
         return applicationContext.beanMap.get(beanName);
-    }
-
-    /**
-     * 根据classLoc读取内容，并将所配置的需要读取的文件scanPackage放入数组
-     * 因为懒（划掉）精力有限，所以只支持properties文件读取了
-     * 支持classpath相对路径或者绝对路径读取
-     * */
-    public static List<String> checkPaths(String classLoc) throws IOException {
-        String[] paths = classLoc.split(",");
-        List<String> result = new ArrayList<String>();
-        for (String filePath : paths) {
-            InputStream is;
-            if (filePath.indexOf("classpath:") == 0) {
-                filePath = filePath.substring("classpath:".length());
-                is = applicationContext.getClass().getClassLoader().getResourceAsStream(filePath);
-            } else {
-                is = new BufferedInputStream(new FileInputStream(filePath));
-            }
-            Properties properties = getProperties(is);
-            is.close();
-            String scanPackage = properties.getProperty("scanPackage");
-            if(StringUtils.isNotEmpty(scanPackage)){
-                result.add(scanPackage.trim());
-            }
-        }
-        return result;
-    }
-
-    private static Properties getProperties(InputStream is) throws IOException {
-        Properties properties = new Properties();
-        properties.load(is);
-        return properties;
     }
 }
