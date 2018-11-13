@@ -1,7 +1,11 @@
 package com.borris;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.*;
 import java.net.URISyntaxException;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.regex.Matcher;
 
 public class Main {
@@ -25,15 +29,18 @@ public class Main {
         b = bos.toByteArray();
         System.out.println(new String(b));
         */
-        File file = new File(Main.class.getResource("/").toURI());
-        String test = "com.borris.smt";
-        String pacToPath = test.replaceAll("\\.", Matcher.quoteReplacement(File.separator));
-        File childPath = new File(file.getAbsoluteFile()+ File.separator+pacToPath);
+//        File file = new File(Main.class.getResource("/").toURI());
+//        String test = "com.borris.smt";
+//        String pacToPath = test.replaceAll("\\.", Matcher.quoteReplacement(File.separator));
+//        File childPath = new File(file.getAbsoluteFile()+ File.separator+pacToPath);
+//
+//        String absPath = childPath.getAbsolutePath();
+//        absPath = absPath.substring(file.getAbsolutePath().length()+1);
+//        absPath = absPath.replaceAll(Matcher.quoteReplacement(File.separator),"\\.");
 
-        String absPath = childPath.getAbsolutePath();
-        absPath = absPath.substring(file.getAbsolutePath().length()+1);
-        absPath = absPath.replaceAll(Matcher.quoteReplacement(File.separator),"\\.");
 
-        System.out.println(absPath);
+        ProtectionDomain pd = StringUtils.class.getProtectionDomain();
+        CodeSource cs = pd.getCodeSource();
+        System.out.println(cs.getLocation());
     }
 }

@@ -1,6 +1,7 @@
 package com.borris.context;
 
 import com.borris.annotation.Component;
+import com.borris.annotation.Controller;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -75,6 +76,12 @@ public class ApplicationContext {
         if(component != null){
             String beanName = component.name();
             applicationContext.beanMap.put(beanName,bean);
+        }
+        Controller controller = (Controller) clazz.getAnnotation(Controller.class);
+        if(controller!=null){
+            String value = controller.value();
+            String controllerName = StringUtils.isEmpty(value)? clazz.getName():value;
+            controllerMap.put(controllerName,bean);
         }
     }
 }
