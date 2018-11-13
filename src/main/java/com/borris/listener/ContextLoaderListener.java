@@ -39,11 +39,10 @@ public class ContextLoaderListener implements ServletContextListener {
             e.printStackTrace();
             return;
         }
-        //3.使用所获得的所有class，用classloader装载
-        initClasses(allClasses);
-        //4.用工厂通过单例的方式初始化所有类，并保存进ApplicationContext中
+        //3.使用所获得的所有class，用工厂通过单例的方式初始化所有类，并保存进ApplicationContext中
+        ApplicationContext.initClasses(allClasses);
 
-        //5.所有类初始化之后，扫描所有类的成员变量，通过autowired识别并注入
+        //4.所有类初始化之后，扫描所有类的成员变量，通过autowired识别并注入
 
 
     }
@@ -121,19 +120,6 @@ public class ContextLoaderListener implements ServletContextListener {
         return classFiles;
     }
 
-    /**
-     * 将class文件装载入jvm
-     * */
-    private void initClasses(List<String> allClasses) {
-        ClassLoader cl = getClass().getClassLoader();
-        allClasses.forEach(className -> {
-            try {
-                cl.loadClass(className);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                System.out.println("cannot load class "+className);
-            }
-        });
-    }
+
 
 }

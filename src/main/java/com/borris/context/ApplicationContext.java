@@ -1,5 +1,6 @@
 package com.borris.context;
 
+import com.borris.annotation.Component;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -49,5 +50,31 @@ public class ApplicationContext {
 
     public static Object getBean(String beanName) {
         return applicationContext.beanMap.get(beanName);
+    }
+
+    /**
+     * 将class文件装载入jvm
+     * */
+    public static void initClasses(List<String> allClasses) {
+        ClassLoader cl = applicationContext.getClass().getClassLoader();
+        allClasses.forEach(className -> {
+            try {
+                Class clazz = cl.loadClass(className);
+                Object bean = clazz.newInstance();
+                applicationContext.putByAnno(clazz,bean);
+            } catch (Exception e) {
+                System.out.println("error while loading class "+className);
+                e.printStackTrace();
+                return;
+            }
+        });
+    }
+
+    private void putByAnno(Class clazz, Object bean) {
+        Component component = (Component) clazz.getAnnotation(Component.class);
+        if(component != null){
+            String beanName = component.name();
+            applicationContext.beanMap.put(beanName,bean);
+        }
     }
 }
