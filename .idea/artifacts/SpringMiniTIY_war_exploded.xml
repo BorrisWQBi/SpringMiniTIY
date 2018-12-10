@@ -1,0 +1,25 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="SpringMiniTIY:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/SpringMiniTIY_war_exploded</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="SpringMiniTIY" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: org.apache.commons:commons-lang3:3.8.1" />
+          <element id="library" level="project" name="Maven: cglib:cglib:3.2.9" />
+          <element id="library" level="project" name="Maven: org.ow2.asm:asm:7.0" />
+          <element id="library" level="project" name="Maven: org.apache.ant:ant:1.10.3" />
+          <element id="library" level="project" name="Maven: org.apache.ant:ant-launcher:1.10.3" />
+          <element id="library" level="project" name="Maven: mysql:mysql-connector-java:8.0.13" />
+          <element id="library" level="project" name="Maven: com.google.protobuf:protobuf-java:3.6.1" />
+          <element id="library" level="project" name="Maven: org.mybatis:mybatis:3.4.6" />
+        </element>
+      </element>
+      <element id="javaee-facet-resources" facet="SpringMiniTIY/web/Web" />
+      <element id="javaee-facet-resources" facet="SpringMiniTIY/javaeeApplication/javaEEApplication" />
+      <element id="dir-copy" path="$PROJECT_DIR$/Webcontent" />
+    </root>
+  </artifact>
+</component>
