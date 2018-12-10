@@ -44,6 +44,7 @@ public class ContextLoaderListener implements ServletContextListener {
 
         //4.所有类初始化之后，扫描所有类的成员变量，通过autowired识别并注入
 
+        //5.初始化映射器HandlerMapping
 
     }
 
