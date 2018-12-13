@@ -8,7 +8,8 @@
   <component name="ChangeListManager">
     <list default="true" id="011ae273-4837-4e51-9139-c1cd328ce940" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SpringMiniTIY.iml" beforeDir="false" afterPath="$PROJECT_DIR$/SpringMiniTIY.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/borris/listener/ContextLoaderListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/borris/listener/ContextLoaderListener.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -38,8 +39,57 @@
       <file leaf-file-name="ContextLoaderListener.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/borris/listener/ContextLoaderListener.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="258">
-              <caret line="94" column="35" selection-start-line="94" selection-start-column="35" selection-end-line="94" selection-end-column="35" />
+            <state relative-caret-position="273">
+              <caret line="26" column="36" selection-start-line="26" selection-start-column="36" selection-end-line="26" selection-end-column="36" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="web.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Webcontent/WEB-INF/web.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="231">
+              <caret line="11" column="38" lean-forward="true" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="38" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="application.properties" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/application.properties">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret column="26" lean-forward="true" selection-start-column="12" selection-end-column="26" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AnnotationBeanFactory.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/factory/AnnotationBeanFactory.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="355">
+              <caret line="39" column="12" selection-start-line="39" selection-start-column="12" selection-end-line="39" selection-end-column="12" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#2564#2572#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AbstractBeanFactory.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/factory/AbstractBeanFactory.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="105">
+              <caret line="5" column="59" selection-start-line="5" selection-start-column="59" selection-end-line="5" selection-end-column="59" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AnnotationBeanFactoryTest.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/test/com/factory/AnnotationBeanFactoryTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="289">
+              <caret line="91" column="81" selection-start-line="91" selection-start-column="81" selection-end-line="91" selection-end-column="81" />
             </state>
           </provider>
         </entry>
@@ -53,20 +103,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="test.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/teat/mybatis/persist/test.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="168">
-              <caret line="8" column="9" lean-forward="true" selection-start-line="8" selection-start-column="9" selection-end-line="8" selection-end-column="9" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TestMybatis.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="TestMybatis.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/teat/mybatis/TestMybatis.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="525">
-              <caret line="25" lean-forward="true" selection-start-line="25" selection-end-line="25" />
+            <state relative-caret-position="357">
+              <caret line="25" selection-start-line="25" selection-end-line="25" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -77,8 +118,8 @@
       <file leaf-file-name="DefaultSqlSessionFactory.java" pinned="false" current-in-tab="false">
         <entry file="jar://$MAVEN_REPOSITORY$/org/mybatis/mybatis/3.4.6/mybatis-3.4.6-sources.jar!/org/apache/ibatis/session/defaults/DefaultSqlSessionFactory.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="178">
-              <caret line="84" column="11" lean-forward="true" selection-start-line="84" selection-start-column="11" selection-end-line="84" selection-end-column="11" />
+            <state relative-caret-position="1176">
+              <caret line="84" column="11" selection-start-line="84" selection-start-column="11" selection-end-line="84" selection-end-column="11" />
             </state>
           </provider>
         </entry>
@@ -91,6 +132,7 @@
         <option value="AnnotationType" />
         <option value="Class" />
         <option value="Tag Library Descriptor" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
@@ -101,8 +143,8 @@
       <find>allClasses</find>
       <find />
       <find>setMethods</find>
-      <find />
       <find>1.5</find>
+      <find>initBeanFactoryByAnnotation</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -127,8 +169,14 @@
         <option value="$PROJECT_DIR$/src/main/java/com/teat/mybatis/TestMybatis.java" />
         <option value="$PROJECT_DIR$/src/main/resources/mybatis.xml" />
         <option value="$PROJECT_DIR$/src/main/resources/mybatis.properties" />
-        <option value="$PROJECT_DIR$/src/main/java/com/borris/listener/ContextLoaderListener.java" />
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/src/main/java/com/BeanFactory.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/factory/IBeanFactory.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/factory/BeanFactory.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/borris/listener/ContextLoaderListener.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/factory/AbstractBeanFactory.java" />
+        <option value="$PROJECT_DIR$/src/main/java/test/com/factory/AnnotationBeanFactoryTest.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/factory/AnnotationBeanFactory.java" />
       </list>
     </option>
   </component>
@@ -177,9 +225,9 @@
   <component name="MavenRunner">
     <option name="jreName" value="1.8" />
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="640" />
-    <option name="width" value="1280" />
+  <component name="ProjectFrameBounds" extendedState="1">
+    <option name="x" value="682" />
+    <option name="width" value="1238" />
     <option name="height" value="1040" />
   </component>
   <component name="ProjectView">
@@ -187,8 +235,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="AndroidView" />
-      <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -229,7 +276,7 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="com" type="462c0819:PsiDirectoryNode" />
-              <item name="borris" type="462c0819:PsiDirectoryNode" />
+              <item name="factory" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="SpringMiniTIY" type="b2602c69:ProjectViewProjectNode" />
@@ -261,7 +308,8 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -270,10 +318,10 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$/Webcontent" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.18700787" />
-    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -297,18 +345,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Maven.SpringMiniTIY [compile]">
-    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.borris.Main" />
-      <module name="SpringMiniTIY" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.borris.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-    </configuration>
+  <component name="RunManager" selected="JUnit.AnnotationBeanFactoryTest.testScanAllClassFiles">
     <configuration name="TestMybatis" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.teat.mybatis.TestMybatis" />
       <module name="SpringMiniTIY" />
@@ -322,6 +359,29 @@
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    </configuration>
+    <configuration name="AnnotationBeanFactoryTest.testScanAllClassFiles" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="SpringMiniTIY" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="test.com.factory.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="test.com.factory" />
+      <option name="MAIN_CLASS_NAME" value="test.com.factory.AnnotationBeanFactoryTest" />
+      <option name="METHOD_NAME" value="testScanAllClassFiles" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <patterns />
     </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit">
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -495,19 +555,19 @@
     </configuration>
     <list>
       <item itemvalue="Tomcat Server.Unnamed" />
-      <item itemvalue="Application.Main" />
       <item itemvalue="Application.TestMybatis" />
       <item itemvalue="Maven.SpringMiniTIY [package]" />
       <item itemvalue="Maven.SpringMiniTIY [deploy]" />
       <item itemvalue="Maven.SpringMiniTIY [compile]" />
+      <item itemvalue="JUnit.AnnotationBeanFactoryTest.testScanAllClassFiles" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.AnnotationBeanFactoryTest.testScanAllClassFiles" />
         <item itemvalue="Maven.SpringMiniTIY [compile]" />
         <item itemvalue="Maven.SpringMiniTIY [deploy]" />
         <item itemvalue="Maven.SpringMiniTIY [package]" />
         <item itemvalue="Application.TestMybatis" />
-        <item itemvalue="Application.Main" />
       </list>
     </recent_temporary>
   </component>
@@ -533,14 +593,48 @@
       <workItem from="1544247900081" duration="4426000" />
       <workItem from="1544346784649" duration="3330000" />
       <workItem from="1544446025441" duration="3196000" />
+      <workItem from="1544718749916" duration="3292000" />
+      <workItem from="1544722493440" duration="642000" />
     </task>
     <servers />
   </component>
+  <component name="TestHistory">
+    <history-entry file="AnnotationBeanFactoryTest_testScanAllClassFiles - 2018.12.14 at 01h 39m 05s.xml">
+      <configuration name="AnnotationBeanFactoryTest.testScanAllClassFiles" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AnnotationBeanFactoryTest_testScanAllClassFiles - 2018.12.14 at 01h 39m 30s.xml">
+      <configuration name="AnnotationBeanFactoryTest.testScanAllClassFiles" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AnnotationBeanFactoryTest_testScanAllClassFiles - 2018.12.14 at 01h 42m 25s.xml">
+      <configuration name="AnnotationBeanFactoryTest.testScanAllClassFiles" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AnnotationBeanFactoryTest_testScanAllClassFiles - 2018.12.14 at 01h 42m 41s.xml">
+      <configuration name="AnnotationBeanFactoryTest.testScanAllClassFiles" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AnnotationBeanFactoryTest_testScanAllClassFiles - 2018.12.14 at 01h 42m 56s.xml">
+      <configuration name="AnnotationBeanFactoryTest.testScanAllClassFiles" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AnnotationBeanFactoryTest_testScanAllClassFiles - 2018.12.14 at 01h 43m 33s.xml">
+      <configuration name="AnnotationBeanFactoryTest.testScanAllClassFiles" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AnnotationBeanFactoryTest_testScanAllClassFiles - 2018.12.14 at 01h 43m 45s.xml">
+      <configuration name="AnnotationBeanFactoryTest.testScanAllClassFiles" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AnnotationBeanFactoryTest_testScanAllClassFiles - 2018.12.14 at 01h 43m 53s.xml">
+      <configuration name="AnnotationBeanFactoryTest.testScanAllClassFiles" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AnnotationBeanFactoryTest_testScanAllClassFiles - 2018.12.14 at 01h 44m 33s.xml">
+      <configuration name="AnnotationBeanFactoryTest.testScanAllClassFiles" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AnnotationBeanFactoryTest_testScanAllClassFiles - 2018.12.14 at 01h 45m 28s.xml">
+      <configuration name="AnnotationBeanFactoryTest.testScanAllClassFiles" configurationId="JUnit" />
+    </history-entry>
+  </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="42392000" />
+    <option name="totallyTimeSpent" value="46326000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="640" y="0" width="1280" height="1040" extended-state="0" />
+    <frame x="682" y="0" width="1238" height="1040" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
@@ -554,8 +648,9 @@
       <window_info id="Structure" order="3" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.24917673" />
       <window_info id="UI Designer" order="6" />
-      <window_info anchor="bottom" id="Debug" order="4" weight="0.391494" />
+      <window_info active="true" anchor="bottom" id="Debug" order="4" visible="true" weight="0.39067703" />
       <window_info anchor="bottom" id="TODO" order="7" />
+      <window_info anchor="bottom" id="Messages" order="9" weight="0.32715377" />
       <window_info anchor="right" id="Palette&#9;" order="6" />
       <window_info id="Image Layers" order="5" />
       <window_info anchor="bottom" id="Java Enterprise" order="0" />
@@ -563,12 +658,11 @@
       <window_info anchor="bottom" id="Version Control" order="11" />
       <window_info anchor="bottom" id="Run" order="3" weight="0.34678298" />
       <window_info anchor="bottom" id="Terminal" order="8" />
-      <window_info active="true" content_ui="combo" id="Project" order="2" visible="true" weight="0.18278688" />
+      <window_info content_ui="combo" id="Project" order="2" visible="true" weight="0.029711375" />
       <window_info id="Web" order="1" side_tool="true" />
       <window_info id="JavaEE:App" order="0" side_tool="true" />
       <window_info anchor="right" id="Theme Preview" order="7" />
       <window_info id="Favorites" order="7" side_tool="true" />
-      <window_info anchor="bottom" id="Messages" order="9" weight="0.32715377" />
       <window_info anchor="bottom" id="Inspection" order="6" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="5" weight="0.25" />
@@ -580,9 +674,8 @@
       <window_info anchor="bottom" id="Application Servers" order="12" weight="0.32963374" />
       <window_info id="Designer" order="4" />
       <window_info anchor="right" id="Palette" order="3" />
-      <window_info anchor="bottom" id="Run" order="3" weight="0.34678298" />
       <window_info id="Image Layers" order="5" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="bottom" id="Run" order="3" weight="0.34678298" />
       <window_info anchor="bottom" id="Cvs" order="5" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.24917673" />
       <window_info id="UI Designer" order="6" />
@@ -590,17 +683,17 @@
       <window_info anchor="bottom" id="Terminal" order="8" />
       <window_info id="Capture Tool" order="8" />
       <window_info anchor="right" id="Capture Analysis" order="4" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="bottom" id="Event Log" order="13" side_tool="true" />
+      <window_info anchor="bottom" id="Messages" order="9" weight="0.32715377" />
       <window_info anchor="bottom" id="TODO" order="7" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Database" order="5" weight="0.32930845" />
       <window_info anchor="bottom" id="Java Enterprise" order="0" />
       <window_info anchor="bottom" id="Database Changes" order="10" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="11" />
       <window_info anchor="right" id="Maven Projects" order="8" visible="true" weight="0.16044776" />
-      <window_info anchor="bottom" id="Find" order="2" />
       <window_info content_ui="combo" id="Project" order="2" weight="0.1705757" />
-      <window_info anchor="bottom" id="Messages" order="9" weight="0.32715377" />
+      <window_info anchor="right" id="Database" order="5" weight="0.32930845" />
       <window_info anchor="bottom" id="Message" order="1" />
       <window_info id="JavaEE:App" order="0" side_tool="true" />
       <window_info id="Web" order="1" side_tool="true" />
@@ -608,6 +701,7 @@
       <window_info anchor="right" id="Theme Preview" order="7" />
       <window_info id="Structure" order="3" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="6" weight="0.4" />
+      <window_info anchor="bottom" id="Find" order="2" />
       <window_info anchor="bottom" id="Debug" order="4" weight="0.391494" />
     </layout-to-restore>
   </component>
@@ -626,8 +720,14 @@
           <properties />
           <option name="timeStamp" value="7" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/factory/AnnotationBeanFactory.java</url>
+          <line>84</line>
+          <properties />
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="9" />
+      <option name="time" value="14" />
     </breakpoint-manager>
   </component>
   <component name="antWorkspaceConfiguration">
@@ -644,62 +744,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_162/src.zip!/java/io/FileSystem.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="196">
-          <caret line="40" column="25" selection-start-line="40" selection-start-column="25" selection-end-line="40" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_162/src.zip!/java/io/File.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="188">
-          <caret line="221" column="31" selection-start-line="221" selection-start-column="31" selection-end-line="221" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_162/src.zip!/java/util/regex/Matcher.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="196">
-          <caret line="699" column="25" selection-start-line="699" selection-start-column="25" selection-end-line="699" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_162/src.zip!/java/util/function/Consumer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="214">
-          <caret line="41" column="17" selection-start-line="41" selection-start-column="17" selection-end-line="41" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_162/src.zip!/java/lang/Iterable.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="214">
-          <caret line="71" column="30" selection-start-line="71" selection-start-column="30" selection-end-line="71" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_162/src.zip!/java/lang/ClassNotFoundException.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="214">
-          <caret line="52" column="13" selection-start-line="52" selection-start-column="13" selection-end-line="52" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_162/src.zip!/java/security/CodeSource.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="165" column="21" selection-start-line="165" selection-start-column="21" selection-end-line="165" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_162/src.zip!/java/security/ProtectionDomain.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1751">
-          <caret line="141" column="11" selection-start-line="141" selection-start-column="11" selection-end-line="141" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.8.0_162/src.zip!/java/lang/Class.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="474">
@@ -826,13 +870,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/application.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="26" selection-start-column="12" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/target/classes/com/teat/mybatis/test.xml" />
     <entry file="jar://$MAVEN_REPOSITORY$/org/mybatis/mybatis/3.4.6/mybatis-3.4.6-sources.jar!/org/apache/ibatis/builder/xml/XMLConfigBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -956,7 +993,7 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/com/teat/mybatis/persist/test.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="168">
-          <caret line="8" column="9" lean-forward="true" selection-start-line="8" selection-start-column="9" selection-end-line="8" selection-end-column="9" />
+          <caret line="8" column="9" selection-start-line="8" selection-start-column="9" selection-end-line="8" selection-end-column="9" />
         </state>
       </provider>
     </entry>
@@ -974,26 +1011,93 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/borris/listener/ContextLoaderListener.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="258">
-          <caret line="94" column="35" selection-start-line="94" selection-start-column="35" selection-end-line="94" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/org/mybatis/mybatis/3.4.6/mybatis-3.4.6-sources.jar!/org/apache/ibatis/session/defaults/DefaultSqlSessionFactory.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="178">
-          <caret line="84" column="11" lean-forward="true" selection-start-line="84" selection-start-column="11" selection-end-line="84" selection-end-column="11" />
+        <state relative-caret-position="1176">
+          <caret line="84" column="11" selection-start-line="84" selection-start-column="11" selection-end-line="84" selection-end-column="11" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/teat/mybatis/TestMybatis.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="525">
-          <caret line="25" lean-forward="true" selection-start-line="25" selection-end-line="25" />
+        <state relative-caret-position="357">
+          <caret line="25" selection-start-line="25" selection-end-line="25" />
           <folding>
             <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/dev tools/apache-tomcat-8.5.31/apache-tomcat-8.5.31/lib/servlet-api.jar!/javax/servlet/http/HttpServletResponse.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="291">
+          <caret line="68" column="9" selection-start-line="68" selection-start-column="9" selection-end-line="68" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/dev tools/apache-tomcat-8.5.31/apache-tomcat-8.5.31/lib/servlet-api.jar!/javax/servlet/http/HttpServlet.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="358">
+          <caret line="41" column="21" selection-start-line="41" selection-start-column="21" selection-end-line="41" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_162/src.zip!/javax/naming/OperationNotSupportedException.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="291">
+          <caret line="42" column="43" selection-start-line="42" selection-start-column="13" selection-end-line="42" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/borris/listener/ContextLoaderListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="273">
+          <caret line="26" column="36" selection-start-line="26" selection-start-column="36" selection-end-line="26" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/application.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="26" lean-forward="true" selection-start-column="12" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/factory/AbstractBeanFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="5" column="59" selection-start-line="5" selection-start-column="59" selection-end-line="5" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12-sources.jar!/org/junit/internal/runners/model/ReflectiveCallable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="273">
+          <caret line="13" selection-start-line="13" selection-end-line="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Webcontent/WEB-INF/web.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="11" column="38" lean-forward="true" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/test/com/factory/AnnotationBeanFactoryTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="91" column="81" selection-start-line="91" selection-start-column="81" selection-end-line="91" selection-end-column="81" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/factory/AnnotationBeanFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="355">
+          <caret line="39" column="12" selection-start-line="39" selection-start-column="12" selection-end-line="39" selection-end-column="12" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2564#2572#0" expanded="true" />
           </folding>
         </state>
       </provider>
