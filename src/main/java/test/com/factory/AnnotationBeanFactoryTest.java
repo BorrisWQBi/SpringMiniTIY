@@ -7,13 +7,6 @@ import org.junit.After;
 
 import java.lang.reflect.Method;
 
-/**
- * AnnotationBeanFactory Tester.
- *
- * @author <Authors name>
- * @version 1.0
- * @since <pre>ʮ���� 14, 2018</pre>
- */
 public class AnnotationBeanFactoryTest {
 
     @Before
@@ -90,6 +83,13 @@ try {
     public void testScanAllClassFiles() throws Exception {
         AnnotationBeanFactory beanFactory = (AnnotationBeanFactory) AnnotationBeanFactory.getInstance();
         beanFactory.initBeanFactoryByAnnotation("classpath:application.properties");
+    }
+
+    @Test
+    public void firstCharLower(){
+//        AnnotationBeanFactory beanFactory = (AnnotationBeanFactory) AnnotationBeanFactory.getInstance();
+//        String test = beanFactory.firstCharLower("testAAAA");
+//        System.out.println(test);
     }
 
 } 

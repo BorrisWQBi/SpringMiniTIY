@@ -1,12 +1,15 @@
 package com.factory;
 
+import com.borris.annotation.Component;
+import com.borris.annotation.Controller;
+import com.borris.annotation.Service;
 import com.borris.context.ApplicationContext;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.regex.Matcher;
 
 public class AnnotationBeanFactory extends AbstractBeanFactory {
@@ -14,8 +17,28 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
     List<String> allClasses;
     File rootDir;
 
+    @Getter
+    @Setter
+    private Map<String, Object> beanMap;
+    @Getter
+    @Setter
+    private Map<String, Object> controllerMap;
+    @Getter
+    @Setter
+    private Map<String, Object> serviceMap;
+    @Getter
+    @Setter
+    private Map<String, Object> repositoryMap;
+    @Getter
+    @Setter
+    private Map<String, Object> requestMap;
 
     private AnnotationBeanFactory() {
+        beanMap = new HashMap<String, Object>();
+        controllerMap = new HashMap<String, Object>();
+        serviceMap = new HashMap<String, Object>();
+        repositoryMap = new HashMap<String, Object>();
+        requestMap = new HashMap<String, Object>();
     }
 
     public static AnnotationBeanFactory getInstance() {
@@ -31,6 +54,8 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
 
     @Override
     public Object getBean(String beanName) {
+
+
         return null;
     }
 
@@ -52,7 +77,7 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
             return;
         }
         //3.使用所获得的所有class，用工厂通过单例的方式初始化所有类，并保存进ApplicationContext中
-        ApplicationContext.initClasses(allClasses);
+        initClasses(allClasses);
 
         //4.所有类初始化之后，扫描所有类的成员变量，通过autowired识别并注入
 
@@ -122,10 +147,59 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
                 if (child.getName().endsWith(".class")) {
                     String absPath = child.getAbsolutePath();
                     absPath = absPath.substring(rootDir.getAbsolutePath().length() + 1);
-                    classFiles.add(absPath.replaceAll(Matcher.quoteReplacement(File.separator), "\\."));
+                    classFiles.add(absPath.replaceAll(Matcher.quoteReplacement(File.separator), "\\.").replace(".class",""));
                 }
             }
         }
         return classFiles;
+    }
+
+    /**
+     * 将class文件装载入jvm
+     * */
+    public void initClasses(List<String> allClasses) {
+        ClassLoader cl = this.getClass().getClassLoader();
+        allClasses.forEach(className -> {
+            try {
+                Class clazz = cl.loadClass(className);
+                Object bean = clazz.newInstance();
+                this.putByAnno(clazz,bean);
+            } catch (Exception e) {
+                System.out.println("error while loading class "+className);
+                e.printStackTrace();
+                return;
+            }
+        });
+    }
+
+    private void putByAnno(Class clazz, Object bean) {
+        Component component = (Component) clazz.getAnnotation(Component.class);
+        if(component != null){
+            String beanName = component.value();
+            if(StringUtils.isEmpty(beanName)){
+                beanName = firstCharLower(clazz.getName());
+            }
+            beanMap.put(beanName,bean);
+        }
+        Controller controller = (Controller) clazz.getAnnotation(Controller.class);
+        if(controller!=null){
+            String value = controller.value();
+            String controllerName = StringUtils.isEmpty(value)? clazz.getName():value;
+            controllerMap.put(controllerName,bean);
+        }
+        Service service = (Service) clazz.getAnnotation(Service.class);
+        if(service!=null){
+            String value = service.value();
+            String serviceName = StringUtils.isEmpty(value)? clazz.getName():value;
+            serviceMap.put(serviceName,bean);
+        }
+    }
+
+    private String firstCharLower(String name) {
+        char[] temp = name.toCharArray();
+        if(temp[0]>='A' && temp[0]<='Z'){
+            temp[0] += 32;
+        }
+        return new String(temp);
     }
 }
