@@ -7,6 +7,7 @@ import com.borris.annotation.RequestMapping;
 
 @Component("testController")
 @Controller
+@RequestMapping("/test")
 public class TestController {
 
     @Autowired

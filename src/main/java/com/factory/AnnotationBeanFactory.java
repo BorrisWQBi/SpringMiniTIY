@@ -1,14 +1,13 @@
 package com.factory;
 
-import com.borris.annotation.Component;
-import com.borris.annotation.Controller;
-import com.borris.annotation.Service;
+import com.borris.annotation.*;
 import com.borris.context.ApplicationContext;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.regex.Matcher;
 
@@ -31,14 +30,14 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
     private Map<String, Object> repositoryMap;
     @Getter
     @Setter
-    private Map<String, Object> requestMap;
+    private Map<String, RequestMapEntry> requestUrlMap;
 
     private AnnotationBeanFactory() {
         beanMap = new HashMap<String, Object>();
         controllerMap = new HashMap<String, Object>();
         serviceMap = new HashMap<String, Object>();
         repositoryMap = new HashMap<String, Object>();
-        requestMap = new HashMap<String, Object>();
+        requestUrlMap = new HashMap<String, RequestMapEntry>();
     }
 
     public static AnnotationBeanFactory getInstance() {
@@ -174,8 +173,9 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
 
     private void putByAnno(Class clazz, Object bean) {
         Component component = (Component) clazz.getAnnotation(Component.class);
+        String beanName = null;
         if(component != null){
-            String beanName = component.value();
+            beanName = component.value();
             if(StringUtils.isEmpty(beanName)){
                 beanName = firstCharLower(clazz.getName());
             }
@@ -184,14 +184,43 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
         Controller controller = (Controller) clazz.getAnnotation(Controller.class);
         if(controller!=null){
             String value = controller.value();
-            String controllerName = StringUtils.isEmpty(value)? clazz.getName():value;
+            String controllerName = StringUtils.isEmpty(value)? beanName:value;
             controllerMap.put(controllerName,bean);
+            analyseRequestMapping(clazz,bean,controllerName);
         }
         Service service = (Service) clazz.getAnnotation(Service.class);
         if(service!=null){
             String value = service.value();
-            String serviceName = StringUtils.isEmpty(value)? clazz.getName():value;
+            String serviceName = StringUtils.isEmpty(value)? beanName:value;
             serviceMap.put(serviceName,bean);
+        }
+        Repository repository = (Repository) clazz.getAnnotation(Repository.class);
+        if(repository!=null){
+            String value = repository.value();
+            String repositoryName = StringUtils.isEmpty(value)? beanName:value;
+            repositoryMap.put(repositoryName,bean);
+        }
+    }
+
+    private void analyseRequestMapping(Class clazz, Object targetObj, String controllerName) {
+        String baseUrl = "";
+        RequestMapping rmBase = targetObj.getClass().getAnnotation(RequestMapping.class);
+        if (rmBase != null) {
+            if (StringUtils.isNotEmpty(rmBase.value())) {
+                baseUrl = rmBase.value();
+            } else {
+                baseUrl = controllerName;
+            }
+        }
+        Method[] methods = clazz.getDeclaredMethods();
+        for (Method method : methods) {
+            RequestMapping rmMethod = method.getAnnotation(RequestMapping.class);
+            String finalUrl = rmMethod.value();
+            if (StringUtils.isEmpty(finalUrl)) {
+                finalUrl = method.getName();
+            }
+            RequestMapEntry rme = new RequestMapEntry(finalUrl, targetObj, method);
+            requestUrlMap.put(finalUrl,rme);
         }
     }
 
@@ -201,5 +230,23 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
             temp[0] += 32;
         }
         return new String(temp);
+    }
+}
+
+class RequestMapEntry{
+    @Getter
+    @Setter
+    private String url;
+    @Getter
+    @Setter
+    private Object mapObj;
+    @Getter
+    @Setter
+    private Method method;
+
+    public RequestMapEntry(String url, Object mapObj, Method method){
+        this.url = url;
+        this.mapObj = mapObj;
+        this.method = method;
     }
 }
