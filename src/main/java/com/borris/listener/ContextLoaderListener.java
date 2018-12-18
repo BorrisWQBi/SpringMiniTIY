@@ -1,5 +1,6 @@
 package com.borris.listener;
 
+import com.borris.context.ApplicationContext;
 import com.factory.AbstractBeanFactory;
 import com.factory.AnnotationBeanFactory;
 
@@ -17,6 +18,8 @@ public class ContextLoaderListener implements ServletContextListener {
         AbstractBeanFactory abf = AnnotationBeanFactory.getInstance();
         try {
             abf.initBeanFactoryByAnnotation(classLoc);
+            sc.setAttribute("BeanFactory",abf);
+            ApplicationContext.setBeanFactory(abf);
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -26,9 +29,4 @@ public class ContextLoaderListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
 
     }
-
-
-
-
-
 }

@@ -17,13 +17,13 @@
     <listener-class>com.borris.listener.ContextLoaderListener</listener-class>
   </listener>
 
-  <!--<servlet>-->
-    <!--<servlet-name>httpService</servlet-name>-->
-    <!--<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>-->
-  <!--</servlet>-->
-  <!--<servlet-mapping>-->
-    <!--<servlet-name>httpService</servlet-name>-->
-    <!--<url-pattern>/httpService</url-pattern>-->
-  <!--</servlet-mapping>-->
+  <servlet>
+    <servlet-name>httpService</servlet-name>
+    <servlet-class>com.borris.servlet.DispatcherServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>httpService</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
 
 </web-app>

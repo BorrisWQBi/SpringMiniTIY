@@ -1,22 +1,20 @@
 package com.borris.context;
 
-public class ApplicationContext {
+import com.factory.AbstractBeanFactory;
 
-    private static ApplicationContext applicationContext;
+public class ApplicationContext{
+    private static AbstractBeanFactory beanFactory;
 
-
-    private ApplicationContext() {
+    public static void setBeanFactory(AbstractBeanFactory beanFactory){
+        ApplicationContext.beanFactory = beanFactory;
     }
 
-    public static ApplicationContext getInstance() {
-        if (applicationContext == null) {
-            synchronized (ApplicationContext.class) {
-                if (applicationContext == null) {
-                    applicationContext = new ApplicationContext();
-                }
-            }
-        }
-        return applicationContext;
+    public AbstractBeanFactory getBeanFactory(){
+        return beanFactory;
+    }
+
+    public Object getBeanByName(String beanName) {
+        return beanFactory.getBean(beanName);
     }
 
 }

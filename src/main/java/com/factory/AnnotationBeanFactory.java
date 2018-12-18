@@ -53,9 +53,11 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
 
     @Override
     public Object getBean(String beanName) {
+        return beanFactory.getBean(beanName);
+    }
 
-
-        return null;
+    public static Object getBeanByName(String beanName) {
+        return beanFactory.getBean(beanName);
     }
 
     @Override
@@ -216,11 +218,12 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
         for (Method method : methods) {
             RequestMapping rmMethod = method.getAnnotation(RequestMapping.class);
             String finalUrl = rmMethod.value();
-            if (StringUtils.isEmpty(finalUrl)) {
+            if (StringUtils.isEmpty(finalUrl))
                 finalUrl = method.getName();
-            }
+            if (StringUtils.isNotEmpty(baseUrl))
+                finalUrl = baseUrl + finalUrl;
             RequestMapEntry rme = new RequestMapEntry(finalUrl, targetObj, method);
-            requestUrlMap.put(finalUrl,rme);
+            requestUrlMap.put(finalUrl, rme);
         }
     }
 
@@ -231,22 +234,8 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
         }
         return new String(temp);
     }
-}
 
-class RequestMapEntry{
-    @Getter
-    @Setter
-    private String url;
-    @Getter
-    @Setter
-    private Object mapObj;
-    @Getter
-    @Setter
-    private Method method;
-
-    public RequestMapEntry(String url, Object mapObj, Method method){
-        this.url = url;
-        this.mapObj = mapObj;
-        this.method = method;
+    public RequestMapEntry getRequestMapEntry(String url){
+        return requestUrlMap.get(url);
     }
 }
