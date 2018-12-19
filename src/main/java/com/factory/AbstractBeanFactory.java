@@ -1,10 +1,6 @@
 package com.factory;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import javax.naming.OperationNotSupportedException;
-import java.lang.reflect.Method;
 
 public abstract class AbstractBeanFactory {
     protected static AbstractBeanFactory beanFactory = null;

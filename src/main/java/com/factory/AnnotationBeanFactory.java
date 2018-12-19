@@ -5,6 +5,11 @@ import com.borris.context.ApplicationContext;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.LocalVariableNode;
+import org.objectweb.asm.tree.MethodNode;
 
 import java.io.*;
 import java.lang.reflect.Method;
@@ -173,7 +178,7 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
         });
     }
 
-    private void putByAnno(Class clazz, Object bean) {
+    private void putByAnno(Class clazz, Object bean) throws IOException {
         Component component = (Component) clazz.getAnnotation(Component.class);
         String beanName = null;
         if(component != null){
@@ -204,7 +209,7 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
         }
     }
 
-    private void analyseRequestMapping(Class clazz, Object targetObj, String controllerName) {
+    private void analyseRequestMapping(Class clazz, Object targetObj, String controllerName) throws IOException {
         String baseUrl = "";
         RequestMapping rmBase = targetObj.getClass().getAnnotation(RequestMapping.class);
         if (rmBase != null) {
@@ -215,16 +220,35 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
             }
         }
         Method[] methods = clazz.getDeclaredMethods();
+        ClassReader cr = new ClassReader(clazz.getClassLoader().getResourceAsStream(clazz.getName().replaceAll("\\.", "/") + ".class"));
+        ClassNode cn = new ClassNode();
+        cr.accept(cn, 0);
+        List<MethodNode> methodNodes = cn.methods;
+
         for (Method method : methods) {
+            MethodNode methodNode = getMethodNode(methodNodes,method);
+            String[] paraNames = new String[methodNode.localVariables.size()-1];
+            for (int i = 1; i < methodNode.localVariables.size(); i++) {
+                paraNames[i-1] = ((LocalVariableNode)methodNode.localVariables.get(i)).name;
+            }
             RequestMapping rmMethod = method.getAnnotation(RequestMapping.class);
             String finalUrl = rmMethod.value();
             if (StringUtils.isEmpty(finalUrl))
                 finalUrl = method.getName();
             if (StringUtils.isNotEmpty(baseUrl))
                 finalUrl = baseUrl + finalUrl;
-            RequestMapEntry rme = new RequestMapEntry(finalUrl, targetObj, method);
+            RequestMapEntry rme = new RequestMapEntry(finalUrl, targetObj, method,paraNames);
             requestUrlMap.put(finalUrl, rme);
         }
+    }
+
+    private MethodNode getMethodNode(List<MethodNode> methodNodes, Method method) {
+        String typeDesc = Type.getMethodDescriptor(method);
+        for (MethodNode methodNode : methodNodes) {
+            if (StringUtils.equals(methodNode.desc, typeDesc) && StringUtils.equals(methodNode.name, method.getName()))
+                return methodNode;
+        }
+        return null;
     }
 
     private String firstCharLower(String name) {

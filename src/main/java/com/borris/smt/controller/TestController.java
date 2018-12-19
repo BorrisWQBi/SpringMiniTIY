@@ -20,8 +20,8 @@ public class TestController {
 
 
     @RequestMapping("/helloMotherFucker")
-    public String helloMotherFucker(String name){
-        return "Hello "+name+" your are an asshole ";
+    public String helloMotherFucker(String fuckYou){
+        return "Hello "+fuckYou+" your are an asshole ";
     }
 
 }
