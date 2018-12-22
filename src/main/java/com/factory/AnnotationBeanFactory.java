@@ -36,6 +36,9 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
     @Getter
     @Setter
     private Map<String, RequestMapEntry> requestUrlMap;
+    @Getter
+    @Setter
+    private List<Object> aspectList;
 
     private AnnotationBeanFactory() {
         beanMap = new HashMap<String, Object>();
@@ -43,6 +46,7 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
         serviceMap = new HashMap<String, Object>();
         repositoryMap = new HashMap<String, Object>();
         requestUrlMap = new HashMap<String, RequestMapEntry>();
+        aspectList = new ArrayList<Object>();
     }
 
     public static AnnotationBeanFactory getInstance() {
@@ -84,7 +88,6 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
         }
         //3.使用所获得的所有class，用工厂通过单例的方式初始化所有类，并保存进ApplicationContext中
         initClasses(allClasses);
-
         //4.所有类初始化之后，扫描所有类的成员变量，通过autowired识别并注入
 
         //5.初始化映射器HandlerMapping
@@ -178,7 +181,53 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
         });
     }
 
-    private void putByAnno(Class clazz, Object bean) throws IOException {
+    private void putByAnno(Class clazz, Object targetBean) throws Exception {
+        String beanName = handleComponent(clazz,targetBean);
+        boolean isServiceInf = false;
+        isServiceInf = handleController(clazz, targetBean, beanName) || handleService(clazz, targetBean, beanName) || handleRepository(clazz, targetBean, beanName);
+        if(clazz.isAnnotationPresent(Aspect.class)){
+            if(isServiceInf){
+                throw new Exception("cannot register a component as the aspect interface.");
+            }
+            aspectList.add(targetBean);
+        }
+    }
+
+    private boolean handleRepository(Class clazz, Object targetBean, String beanName) {
+        Repository repository = (Repository) clazz.getAnnotation(Repository.class);
+        if(repository!=null){
+            String value = repository.value();
+            String repositoryName = StringUtils.isEmpty(value)? beanName:value;
+            repositoryMap.put(repositoryName,targetBean);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean handleService(Class clazz, Object targetBean, String beanName) {
+        Service service = (Service) clazz.getAnnotation(Service.class);
+        if(service!=null){
+            String value = service.value();
+            String serviceName = StringUtils.isEmpty(value)? beanName:value;
+            serviceMap.put(serviceName,targetBean);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean handleController(Class clazz, Object targetBean, String beanName) throws IOException {
+        Controller controller = (Controller) clazz.getAnnotation(Controller.class);
+        if(controller!=null){
+            String value = controller.value();
+            String controllerName = StringUtils.isEmpty(value)? beanName:value;
+            controllerMap.put(controllerName,targetBean);
+            analyseRequestMapping(clazz,targetBean,controllerName);
+            return true;
+        }
+        return false;
+    }
+
+    private String handleComponent(Class clazz, Object targetBean) {
         Component component = (Component) clazz.getAnnotation(Component.class);
         String beanName = null;
         if(component != null){
@@ -186,27 +235,9 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
             if(StringUtils.isEmpty(beanName)){
                 beanName = firstCharLower(clazz.getName());
             }
-            beanMap.put(beanName,bean);
+            beanMap.put(beanName,targetBean);
         }
-        Controller controller = (Controller) clazz.getAnnotation(Controller.class);
-        if(controller!=null){
-            String value = controller.value();
-            String controllerName = StringUtils.isEmpty(value)? beanName:value;
-            controllerMap.put(controllerName,bean);
-            analyseRequestMapping(clazz,bean,controllerName);
-        }
-        Service service = (Service) clazz.getAnnotation(Service.class);
-        if(service!=null){
-            String value = service.value();
-            String serviceName = StringUtils.isEmpty(value)? beanName:value;
-            serviceMap.put(serviceName,bean);
-        }
-        Repository repository = (Repository) clazz.getAnnotation(Repository.class);
-        if(repository!=null){
-            String value = repository.value();
-            String repositoryName = StringUtils.isEmpty(value)? beanName:value;
-            repositoryMap.put(repositoryName,bean);
-        }
+        return beanName;
     }
 
     private void analyseRequestMapping(Class clazz, Object targetObj, String controllerName) throws IOException {
