@@ -16,6 +16,8 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.regex.Matcher;
 
+import static com.factory.Utils.getMethodNode;
+
 public class AnnotationBeanFactory extends AbstractBeanFactory {
     List<String> scanPaths;
     List<String> allClasses;
@@ -273,14 +275,6 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
         }
     }
 
-    private MethodNode getMethodNode(List<MethodNode> methodNodes, Method method) {
-        String typeDesc = Type.getMethodDescriptor(method);
-        for (MethodNode methodNode : methodNodes) {
-            if (StringUtils.equals(methodNode.desc, typeDesc) && StringUtils.equals(methodNode.name, method.getName()))
-                return methodNode;
-        }
-        return null;
-    }
 
     private String firstCharLower(String name) {
         char[] temp = name.toCharArray();

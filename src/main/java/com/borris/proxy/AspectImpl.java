@@ -11,7 +11,7 @@ public class AspectImpl implements Comparable<AspectImpl> {
     private int order;
 
     private List<Method> beforeMethodList;
-    private List<Method> aroundMethodList;
+    private Method aroundMethod;
     private List<Method> afterMethodList;
 
     @Override
@@ -61,11 +61,8 @@ public class AspectImpl implements Comparable<AspectImpl> {
         }
     }
 
-    public static Object invokeAround(Object proxy, Method method, Object[] args, Queue<AspectImpl> queue) throws InvocationTargetException, IllegalAccessException {
-        AspectImpl aspect = queue.poll();
-        if(aspect==null){
-        }
-        return null;
+    public Object invokeAround(Object targetObject, Method targetMethod, Object[] targetArgs) throws InvocationTargetException, IllegalAccessException {
+        return aroundMethod.invoke(targetAspect,new MethodInvoker(targetObject,targetMethod,targetArgs));
     }
 
     private boolean hasMatchType(Class<?>[] parameterTypes, Method targetMethod) {

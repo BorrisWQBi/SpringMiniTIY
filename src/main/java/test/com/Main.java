@@ -1,4 +1,4 @@
-package com.borris;
+package test.com;
 
 import org.apache.commons.lang3.StringUtils;
 

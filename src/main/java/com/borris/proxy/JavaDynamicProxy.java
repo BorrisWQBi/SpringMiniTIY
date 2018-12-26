@@ -2,32 +2,21 @@ package com.borris.proxy;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 
 public class JavaDynamicProxy implements InvocationHandler {
+    private Object targetBean;
+    private AspectImpl aspectObj;
 
-    Object targetBean;
-
-
-    List<AspectImpl> aspectList;
+    public JavaDynamicProxy(Object targetBean, AspectImpl aspectObj) {
+        this.targetBean = targetBean;
+        this.aspectObj = aspectObj;
+    }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        Object result;
-        if(aspectList!=null && !aspectList.isEmpty()){
-            aspectList.forEach(aspect -> {
-                aspect.invokeBefore(method);
-            });
-            Queue<AspectImpl> aspectQueue = new LinkedList<AspectImpl>(aspectList);
-            result = AspectImpl.invokeAround(proxy,method,args,aspectQueue);
-            aspectList.forEach(aspect -> {
-                aspect.invokeAfter(method);
-            });
-        }
-        return null;
+        aspectObj.invokeBefore(method);
+        Object result = aspectObj.invokeAround(targetBean, method, args);
+        aspectObj.invokeBefore(method);
+        return result;
     }
-
-
 }
