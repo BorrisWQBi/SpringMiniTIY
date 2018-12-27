@@ -10,11 +10,13 @@ public class JavaDynamicProxy implements InvocationHandler {
     public JavaDynamicProxy(Object targetBean, AspectImpl aspectObj) {
         this.targetBean = targetBean;
         this.aspectObj = aspectObj;
+        this.aspectObj.buildAroundStacks();
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         aspectObj.invokeBefore(method);
+
         Object result = aspectObj.invokeAround(targetBean, method, args);
         aspectObj.invokeBefore(method);
         return result;
