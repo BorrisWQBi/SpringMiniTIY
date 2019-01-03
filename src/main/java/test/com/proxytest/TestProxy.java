@@ -4,17 +4,17 @@ import com.borris.proxy.AspectImpl;
 import com.borris.proxy.JavaDynamicProxy;
 import com.borris.proxy.MethodInvoker;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestProxy {
-    public static void main(String[] args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        testdigui();
 
+    private TestBeanInf testBean;
+
+    public static void main(String[] args) throws Throwable {
+        //testdigui();
+        test1();
     }
 
     private static void testdigui() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
@@ -36,10 +36,9 @@ public class TestProxy {
         ai.buildAroundStacks();
         ai.invokeAround(tbi, targetMethod);
         ai.invokeAround(tbi, targetMethod2);
-
     }
 
-    public static void test1(){
+    public static void test1() throws NoSuchFieldException, IllegalAccessException {
         TestBeanInf tb = new TestBeanImpl("445");
         InvocationHandler proxy = new JavaDynamicProxy(tb, null);
         TestBeanInf tb___Proxy = (TestBeanInf) Proxy.newProxyInstance(tb.getClass().getClassLoader(),tb.getClass().getInterfaces(),proxy);
@@ -51,5 +50,15 @@ public class TestProxy {
         tb___Proxy.print1();
         System.out.println();
         tb___Proxy___2.print1();
+
+        TestProxy tp = new TestProxy();
+        Field field = tp.getClass().getDeclaredField("testBean");
+        field.setAccessible(true);
+        field.set(tp,tb___Proxy___2);
+        tp.testBean.print1();
+    }
+
+    public void setTestBean(TestBeanImpl testBean) {
+        this.testBean = testBean;
     }
 }
