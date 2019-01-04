@@ -1,11 +1,15 @@
 package com.borris.proxy;
 
+import com.borris.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.tools.ant.taskdefs.condition.Or;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AspectImpl implements Comparable<AspectImpl> {
 
@@ -25,14 +29,28 @@ public class AspectImpl implements Comparable<AspectImpl> {
     private List<Method> aroundMethodList;
     @Getter
     @Setter
-    private MethodInvoker aroundMethod;
+    private List<Method> afterMethodList;
     @Getter
     @Setter
-    private List<Method> afterMethodList;
+    private MethodInvoker aroundMethod;
+
+    public AspectImpl(Class aspectClass) throws IllegalAccessException, InstantiationException {
+        if (!aspectClass.isAnnotationPresent(Aspect.class)) {
+            throw new UnsupportedOperationException("class " + aspectClass.toString() + " is not an aspect class");
+        }
+        Order orderAnno = (Order) aspectClass.getAnnotation(Order.class);
+        order = orderAnno.value();
+        Method[] allMethod = aspectClass.getDeclaredMethods();
+        beforeMethodList = Arrays.stream(allMethod).filter(method -> method.isAnnotationPresent(Before.class)).collect(Collectors.toList());
+        aroundMethodList = Arrays.stream(allMethod).filter(method -> method.isAnnotationPresent(Around.class)).collect(Collectors.toList());
+        afterMethodList = Arrays.stream(allMethod).filter(method -> method.isAnnotationPresent(After.class)).collect(Collectors.toList());
+
+        this.targetAspect = aspectClass.newInstance();
+    }
 
     @Override
     public int compareTo(AspectImpl o) {
-        if (this.order < o.order)
+        if (this.order > o.order)
             return -1;
         if (this.order == o.order)
             return 0;
@@ -42,16 +60,14 @@ public class AspectImpl implements Comparable<AspectImpl> {
     public void invokeBefore(Method targetMethod) {
         if (beforeMethodList != null && !beforeMethodList.isEmpty()) {
             beforeMethodList.forEach(beforeMethod -> {
-                Object[] args = new Object[]{};
-                if (hasMatchType(beforeMethod.getParameterTypes(), targetMethod)) {
-                    args = new Object[]{targetMethod};
-                }
+                Object[] args = new Object[beforeMethod.getParameterTypes().length];
+                int idx = hasMatchType(beforeMethod.getParameterTypes(), targetMethod);
+                if (idx >= 0)
+                    args[idx] = targetMethod;
                 beforeMethod.setAccessible(true);
                 try {
                     beforeMethod.invoke(targetAspect, args);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
@@ -61,16 +77,14 @@ public class AspectImpl implements Comparable<AspectImpl> {
     public void invokeAfter(Method targetMethod) {
         if (afterMethodList != null && !afterMethodList.isEmpty()) {
             afterMethodList.forEach(afterMethod -> {
-                Object[] args = new Object[]{};
-                if (hasMatchType(afterMethod.getParameterTypes(), targetMethod)) {
-                    args = new Object[]{targetMethod};
-                }
+                Object[] args = new Object[afterMethod.getParameterTypes().length];
+                int idx = hasMatchType(afterMethod.getParameterTypes(), targetMethod);
+                if (idx >= 0)
+                    args[idx] = targetMethod;
                 afterMethod.setAccessible(true);
                 try {
                     afterMethod.invoke(targetAspect, args);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
@@ -89,12 +103,13 @@ public class AspectImpl implements Comparable<AspectImpl> {
         return result;
     }
 
-    private boolean hasMatchType(Class<?>[] parameterTypes, Method targetMethod) {
-        for (Class clazz : parameterTypes) {
+    private int hasMatchType(Class<?>[] parameterTypes, Method targetMethod) {
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Class clazz = parameterTypes[i];
             if (clazz.equals(targetMethod.getClass()))
-                return true;
+                return i;
         }
-        return false;
+        return -1;
     }
 
     public void buildAroundStacks() {

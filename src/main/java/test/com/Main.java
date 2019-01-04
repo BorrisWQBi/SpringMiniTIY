@@ -1,12 +1,16 @@
 package test.com;
 
+import com.borris.annotation.Component;
+import com.borris.annotation.Controller;
+import com.borris.smt.controller.TestController;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
-import java.util.regex.Matcher;
+import java.util.Arrays;
+import java.util.function.BinaryOperator;
 
 public class Main {
     public static void main(String[] args) throws IOException, URISyntaxException {
@@ -38,9 +42,13 @@ public class Main {
 //        absPath = absPath.substring(file.getAbsolutePath().length()+1);
 //        absPath = absPath.replaceAll(Matcher.quoteReplacement(File.separator),"\\.");
 
+        BinaryOperator<Long> add = (x, y)->x+y;
+        System.out.println(add.apply(10L,20L));
 
         ProtectionDomain pd = StringUtils.class.getProtectionDomain();
         CodeSource cs = pd.getCodeSource();
         System.out.println(cs.getLocation());
+
+        System.out.println(Arrays.toString(TestController.class.getAnnotations()));
     }
 }

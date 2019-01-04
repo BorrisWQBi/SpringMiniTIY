@@ -1,4 +1,4 @@
-package com.factory;
+package com.borris.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.Type;

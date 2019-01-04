@@ -30,12 +30,12 @@ public class TestProxy {
             milist.add(around);
         }
 
-        AspectImpl ai = new AspectImpl();
-        ai.setAroundMethodList(milist);
-        ai.setTargetAspect(aspect);
-        ai.buildAroundStacks();
-        ai.invokeAround(tbi, targetMethod);
-        ai.invokeAround(tbi, targetMethod2);
+//        AspectImpl ai = new AspectImpl();
+//        ai.setAroundMethodList(milist);
+//        ai.setTargetAspect(aspect);
+//        ai.buildAroundStacks();
+//        ai.invokeAround(tbi, targetMethod);
+//        ai.invokeAround(tbi, targetMethod2);
     }
 
     public static void test1() throws NoSuchFieldException, IllegalAccessException {

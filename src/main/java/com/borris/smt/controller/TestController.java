@@ -5,7 +5,7 @@ import com.borris.annotation.Component;
 import com.borris.annotation.Controller;
 import com.borris.annotation.RequestMapping;
 
-@Component("testController")
+//@Component("testController")
 @Controller
 @RequestMapping("/test")
 public class TestController {

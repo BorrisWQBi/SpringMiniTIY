@@ -1,16 +1,18 @@
 package com.borris.servlet;
 
+import com.alibaba.fastjson.JSONObject;
 import com.factory.AbstractBeanFactory;
 import com.factory.RequestMapEntry;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
+@WebServlet(name = "httpService", urlPatterns = "/*")
 public class DispatcherServlet extends HttpServlet {
 
     private AbstractBeanFactory beanFactory;
@@ -21,11 +23,10 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp)  {
+    protected void service(HttpServletRequest req, HttpServletResponse resp) {
         String url = req.getPathInfo();
         RequestMapEntry rme = beanFactory.getRequestMapEntry(url);
-        if(rme !=null){
-            Method method = rme.getMethod();
+        if (rme != null) {
             String[] paraNames = rme.getParameterNames();
             Object[] objs = new Object[paraNames.length];
             for (int i = 0; i < paraNames.length; i++) {
@@ -33,7 +34,11 @@ public class DispatcherServlet extends HttpServlet {
             }
             try {
                 Object result = rme.invokeMethod(objs);
-                resp.getWriter().write(result.toString());
+                if (result instanceof String) {
+                    resp.getWriter().write(result.toString());
+                } else {
+                    resp.getWriter().write(JSONObject.toJSONString(result));
+                }
             } catch (InvocationTargetException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
