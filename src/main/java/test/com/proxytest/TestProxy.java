@@ -56,6 +56,11 @@ public class TestProxy {
         field.setAccessible(true);
         field.set(tp,tb___Proxy___2);
         tp.testBean.print1();
+
+        TestBeanImpl tb2 = new TestBeanImpl("445");
+        Object obj = tb2;
+        InvocationHandler proxy2 = new JavaDynamicProxy(obj, null);
+        obj = Proxy.newProxyInstance(tb.getClass().getClassLoader(),tb.getClass().getInterfaces(),proxy);
     }
 
     public void setTestBean(TestBeanImpl testBean) {

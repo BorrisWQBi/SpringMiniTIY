@@ -3,6 +3,7 @@ package test.com;
 import com.borris.annotation.Component;
 import com.borris.annotation.Controller;
 import com.borris.smt.controller.TestController;
+import com.borris.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -50,5 +51,7 @@ public class Main {
         System.out.println(cs.getLocation());
 
         System.out.println(Arrays.toString(TestController.class.getAnnotations()));
+
+        System.out.println(Utils.checkHasAnnotation(TestController.class,Component.class));
     }
 }

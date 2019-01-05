@@ -3,7 +3,10 @@ package com.factory;
 import com.borris.annotation.*;
 import com.borris.context.ApplicationContext;
 import com.borris.proxy.AspectImpl;
+import com.borris.proxy.CglibProxy;
+import com.borris.proxy.JavaDynamicProxy;
 import com.borris.utils.LambdaExceptionHandler;
+import com.borris.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +16,9 @@ import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
@@ -29,6 +34,9 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
     @Getter
     @Setter
     private Map<String, Object> beanMap;
+    @Getter
+    @Setter
+    private Map<Class, Object> beanMapByType;
     @Getter
     @Setter
     private Map<String, Object> controllerMap;
@@ -91,17 +99,30 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
             //3.使用所获得的所有className列表，获得所有的class对象并放入列表中
             List<Class> tempClasses = initClasses(allClassNames);
             //将load到的class全部筛选出aspect class列表
-            aspectClassList.addAll(tempClasses.stream().filter(clazz -> clazz.isAnnotationPresent(Aspect.class)).collect(Collectors.toList()));
+            aspectClassList.addAll(tempClasses.stream()
+                    .filter(clazz -> Utils.checkHasAnnotation(clazz, Aspect.class)).collect(Collectors.toList()));
             //将load到的其他component class全部筛选出放入普通的class列表
             allClasses.addAll(tempClasses.stream()
-                    .filter(clazz -> clazz.isAnnotationPresent(Component.class) && !clazz.isAnnotationPresent(Aspect.class))
+                    .filter(clazz -> Utils.checkHasAnnotation(clazz, Component.class) && !Utils.checkHasAnnotation(clazz, Aspect.class))
                     .collect(Collectors.toList()));
             //4.找到aspect注解标记类，并初始化代理接口列表
             aspectList = initAspectList(aspectClassList);
+            //5.初始化所有bean 并创建代理
+            initBeansByAnno();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    private void initBeansByAnno() {
+        allClasses.forEach(LambdaExceptionHandler.throwingConsumerWrapper(c -> createBean(c)));
+    }
+
+    private void createBean(Class clazz) throws Exception {
+        Object bean = clazz.newInstance();
+        putByAnno(clazz,bean);
+    }
+
 
     /***
      * 找出所有配置了@Aspect的类，实例化并创建代理接口类
@@ -212,69 +233,93 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
 
     private void putByAnno(Class clazz, Object targetBean) throws Exception {
         String beanName = handleComponent(clazz,targetBean);
+        //将已经创建了代理的targetBean重新复制给引用
+        targetBean = beanMap.get(beanName);
+        //这个boolean变量本来是为了判断一般的bean和aspect注解的bean分开的
+        //所以这三个handle方法也返回一个boolean
+        //但后来这部分重新在前置方法里进行了处理筛选，到这里的都是一般的component
+        //但还是暂时保留这部分逻辑
         boolean isServiceInf = false;
-        isServiceInf = handleController(clazz, targetBean, beanName) || handleService(clazz, targetBean, beanName) || handleRepository(clazz, targetBean, beanName);
-//        if(clazz.isAnnotationPresent(Aspect.class)){
-//            if(isServiceInf){
-//                throw new Exception("cannot register a component as the aspect interface.");
-//            }
-//            aspectList.add(targetBean);
-//        }
+        isServiceInf = handleController(clazz, targetBean, beanName)
+                || handleService(clazz, targetBean, beanName)
+                || handleRepository(clazz, targetBean, beanName);
+        //注入不做太复杂了，直接在field上注入吧~
+        Field[] fields = clazz.getFields();
+        for(Field f: fields){
+            if (Utils.checkFieldHasAnno(f, Autowired.class)){
+                
+            }
+        }
     }
 
     private boolean handleRepository(Class clazz, Object targetBean, String beanName) {
         Repository repository = (Repository) clazz.getAnnotation(Repository.class);
+        String repositoryName = null;
         if(repository!=null){
             String value = repository.value();
-            String repositoryName = StringUtils.isEmpty(value)? beanName:value;
-            repositoryMap.put(repositoryName,targetBean);
-            return true;
+            repositoryName = StringUtils.isEmpty(value)? beanName:value;
         }
-        return false;
+        repositoryMap.put(repositoryName,targetBean);
+        return true;
     }
 
     private boolean handleService(Class clazz, Object targetBean, String beanName) {
         Service service = (Service) clazz.getAnnotation(Service.class);
+        String serviceName = null;
         if(service!=null){
             String value = service.value();
-            String serviceName = StringUtils.isEmpty(value)? beanName:value;
-            serviceMap.put(serviceName,targetBean);
-            return true;
+            serviceName = StringUtils.isEmpty(value)? beanName:value;
         }
-        return false;
+        serviceMap.put(serviceName,targetBean);
+        return true;
     }
 
     private boolean handleController(Class clazz, Object targetBean, String beanName) throws IOException {
         Controller controller = (Controller) clazz.getAnnotation(Controller.class);
+        String controllerName = null;
         if(controller!=null){
             String value = controller.value();
-            String controllerName = StringUtils.isEmpty(value)? beanName:value;
-            controllerMap.put(controllerName,targetBean);
-            analyseRequestMapping(clazz,targetBean,controllerName);
-            return true;
+            controllerName = StringUtils.isEmpty(value)? beanName:value;
         }
-        return false;
+        controllerMap.put(controllerName,targetBean);
+        analyseRequestMapping(clazz,targetBean,controllerName);
+        return true;
     }
 
     private String handleComponent(Class clazz, Object targetBean) {
         Component component = (Component) clazz.getAnnotation(Component.class);
         String beanName = null;
-        if(component != null){
+        if (component != null) {
             beanName = component.value();
-            if(StringUtils.isEmpty(beanName)){
+            if (StringUtils.isEmpty(beanName)) {
                 beanName = firstCharLower(clazz.getName());
             }
-            beanMap.put(beanName,createProxyBean(targetBean));
+        }
+        targetBean = createProxyBean(targetBean);
+        beanMap.put(beanName, targetBean);
+        for(Class type:clazz.getInterfaces()){
+            beanMapByType.put(type,targetBean);
         }
         return beanName;
     }
 
     private Object createProxyBean(Object targetBean) {
         Class clazz = targetBean.getClass();
+        //如果目标类有实现接口，则使用JDK创建动态代理
         if(clazz.getInterfaces()!=null){
-//            JavaDynamicProxy jdp = new JavaDynamicProxy(targetBean);
+            for(AspectImpl asp : aspectList){
+                JavaDynamicProxy jdp = new JavaDynamicProxy(targetBean,asp);
+                targetBean = Proxy.newProxyInstance(clazz.getClassLoader(),clazz.getInterfaces(),jdp);
+            }
         }
-        return null;
+        //如果没有实现接口，则使用CGLIB创建代理
+        else{
+            for(AspectImpl asp : aspectList){
+                CglibProxy clb = new CglibProxy();
+                targetBean = clb.getInstance(targetBean,asp);
+            }
+        }
+        return targetBean;
     }
 
     private void analyseRequestMapping(Class clazz, Object targetObj, String controllerName) throws IOException {
