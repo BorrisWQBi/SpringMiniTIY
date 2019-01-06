@@ -39,7 +39,11 @@ public class AspectImpl implements Comparable<AspectImpl> {
             throw new UnsupportedOperationException("class " + aspectClass.toString() + " is not an aspect class");
         }
         Order orderAnno = (Order) aspectClass.getAnnotation(Order.class);
-        order = orderAnno.value();
+        if(orderAnno != null){
+            order = orderAnno.value();
+        }else{
+            order=-1;
+        }
         Method[] allMethod = aspectClass.getDeclaredMethods();
         beforeMethodList = Arrays.stream(allMethod).filter(method -> method.isAnnotationPresent(Before.class)).collect(Collectors.toList());
         aroundMethodList = Arrays.stream(allMethod).filter(method -> method.isAnnotationPresent(Around.class)).collect(Collectors.toList());
@@ -50,11 +54,14 @@ public class AspectImpl implements Comparable<AspectImpl> {
 
     @Override
     public int compareTo(AspectImpl o) {
+        //如果order小于0，则优先级最低
+        if (this.order < 0)
+            return 1;
         if (this.order > o.order)
-            return -1;
+            return 1;
         if (this.order == o.order)
             return 0;
-        return 1;
+        return -1;
     }
 
     public void invokeBefore(Method targetMethod) {

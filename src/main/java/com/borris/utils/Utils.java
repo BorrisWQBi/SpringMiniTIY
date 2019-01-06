@@ -6,6 +6,8 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -35,7 +37,8 @@ public class Utils {
             return true;
         boolean isParentComponent = false;
         for(Annotation anno : annotations){
-
+            if(anno.annotationType().equals(Retention.class) || anno.annotationType().equals(Target.class))
+                continue;
             isParentComponent = checkHasAnnotation(anno.annotationType(),annoType);
             if(isParentComponent){
                 return isParentComponent;

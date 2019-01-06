@@ -10,16 +10,16 @@ public class CglibProxy implements MethodInterceptor {
     private Object targetBean;
     private AspectImpl aspectObj;
 
-    public Object getInstance(Object targetObject, AspectImpl aspectObj) {
-        this.targetBean = targetObject;
+    public static Object getInstance(CglibProxy clb, Object targetObject, AspectImpl aspectObj) {
+        clb.targetBean = targetObject;
         Enhancer eh = new Enhancer();
-        eh.setSuperclass(this.targetBean.getClass());
-        eh.setCallback(this);
+        eh.setSuperclass(clb.targetBean.getClass());
+        eh.setCallback(clb);
         Object proxyObject = eh.create();
 
-        this.aspectObj = aspectObj;
-        if (this.aspectObj != null) {
-            this.aspectObj.buildAroundStacks();
+        clb.aspectObj = aspectObj;
+        if (clb.aspectObj != null) {
+            clb.aspectObj.buildAroundStacks();
         }
 
         return proxyObject;

@@ -59,6 +59,7 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
 
     private AnnotationBeanFactory() {
         beanMap = new HashMap<String, Object>();
+        beanMapByType = new HashMap<Class, Object>();
         controllerMap = new HashMap<String, Object>();
         serviceMap = new HashMap<String, Object>();
         repositoryMap = new HashMap<String, Object>();
@@ -100,11 +101,11 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
             List<Class> tempClasses = initClasses(allClassNames);
             //将load到的class全部筛选出aspect class列表
             aspectClassList.addAll(tempClasses.stream()
-                    .filter(clazz -> Utils.checkHasAnnotation(clazz, Aspect.class)).collect(Collectors.toList()));
+                    .filter(clazz -> Utils.checkHasAnnotation(clazz, Component.class) && Utils.checkHasAnnotation(clazz, Aspect.class)).collect(Collectors.toList()));
             //将load到的其他component class全部筛选出放入普通的class列表
-            allClasses.addAll(tempClasses.stream()
+            allClasses = tempClasses.stream()
                     .filter(clazz -> Utils.checkHasAnnotation(clazz, Component.class) && !Utils.checkHasAnnotation(clazz, Aspect.class))
-                    .collect(Collectors.toList()));
+                    .collect(Collectors.toList());
             //4.找到aspect注解标记类，并初始化代理接口列表
             aspectList = initAspectList(aspectClassList);
             //5.初始化所有bean 并创建代理
@@ -115,12 +116,19 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
     }
 
     private void initBeansByAnno() {
-        allClasses.forEach(LambdaExceptionHandler.throwingConsumerWrapper(c -> createBean(c)));
+        allClasses.forEach(LambdaExceptionHandler.throwingConsumerWrapper(c -> getBeanByType(c)));
     }
 
-    private void createBean(Class clazz) throws Exception {
+    private Object getBeanByType(Class clazz) throws Exception {
+        if (!beanMapByType.containsKey(clazz)) {
+            return createBeanByType(clazz);
+        }
+        return beanMapByType;
+    }
+
+    private Object createBeanByType(Class clazz) throws Exception {
         Object bean = clazz.newInstance();
-        putByAnno(clazz,bean);
+        return putByAnno(clazz, bean);
     }
 
 
@@ -131,6 +139,9 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
      * @param aspectClassList
      */
     private List<AspectImpl> initAspectList(List<Class> aspectClassList) {
+        if(aspectClassList.isEmpty()){
+            return new ArrayList<>();
+        }
         List<AspectImpl> aspectList = new ArrayList<>();
         aspectClassList.forEach(LambdaExceptionHandler.throwingConsumerWrapper(aspectClass ->
                 aspectList.add(new AspectImpl(aspectClass))
@@ -146,7 +157,7 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
 
     /**
      * 遍历包路径列表，扫描所有class文件
-     * */
+     */
     public List<String> scanAllClasses(List<String> paths) throws Exception {
         //获得的root路径，即com的父级目录
         rootDir = new File(ApplicationContext.class.getResource("/").toURI());
@@ -194,7 +205,7 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
 
     /**
      * 递归扫描所有class文件
-     * */
+     */
     private List<String> scanAllClassFiles(File parentDir) {
         List<String> classFiles = new ArrayList<String>();
         File[] flist = parentDir.listFiles();
@@ -205,7 +216,7 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
                 if (child.getName().endsWith(".class")) {
                     String absPath = child.getAbsolutePath();
                     absPath = absPath.substring(rootDir.getAbsolutePath().length() + 1);
-                    classFiles.add(absPath.replaceAll(Matcher.quoteReplacement(File.separator), "\\.").replace(".class",""));
+                    classFiles.add(absPath.replaceAll(Matcher.quoteReplacement(File.separator), "\\.").replace(".class", ""));
                 }
             }
         }
@@ -214,7 +225,7 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
 
     /**
      * 将class文件装载入jvm
-     * */
+     */
     public List<Class> initClasses(List<String> classNameList) {
         ClassLoader cl = this.getClass().getClassLoader();
         List<Class> classList = new ArrayList<>(classNameList.size());
@@ -231,8 +242,8 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
         return classList;
     }
 
-    private void putByAnno(Class clazz, Object targetBean) throws Exception {
-        String beanName = handleComponent(clazz,targetBean);
+    private Object putByAnno(Class clazz, Object targetBean) throws Exception {
+        String beanName = handleComponent(clazz, targetBean);
         //将已经创建了代理的targetBean重新复制给引用
         targetBean = beanMap.get(beanName);
         //这个boolean变量本来是为了判断一般的bean和aspect注解的bean分开的
@@ -243,11 +254,35 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
         isServiceInf = handleController(clazz, targetBean, beanName)
                 || handleService(clazz, targetBean, beanName)
                 || handleRepository(clazz, targetBean, beanName);
-        //注入不做太复杂了，直接在field上注入吧~
+        //注入属性
+        injectBeanByField(clazz, targetBean);
+        //将创建好代理并且注入了的targetBean返回
+        return targetBean;
+    }
+
+    /***
+     *注入不做太复杂了，直接在field上注入吧~
+     */
+    private void injectBeanByField(Class clazz, Object targetBean) throws Exception {
         Field[] fields = clazz.getFields();
-        for(Field f: fields){
-            if (Utils.checkFieldHasAnno(f, Autowired.class)){
-                
+        for (Field f : fields) {
+            if (Utils.checkFieldHasAnno(f, Autowired.class)) {
+                Object injectBean = null;
+                //通过autowired名称取bean
+                Autowired aw = f.getAnnotation(Autowired.class);
+                if (StringUtils.isNotEmpty(aw.value())) {
+                    injectBean = beanMap.get(aw.value());
+                }
+                //若通过名称取bean失败，则通过类型取
+                if (injectBean == null) {
+                    injectBean = beanMapByType.get(f.getType());
+                }
+                //若通过类型取bean也失败，则表示该bean还不存在，创建新的bean
+                if (injectBean == null) {
+                    injectBean = getBeanByType(f.getType());
+                }
+                f.setAccessible(true);
+                f.set(targetBean, injectBean);
             }
         }
     }
@@ -255,34 +290,34 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
     private boolean handleRepository(Class clazz, Object targetBean, String beanName) {
         Repository repository = (Repository) clazz.getAnnotation(Repository.class);
         String repositoryName = null;
-        if(repository!=null){
+        if (repository != null) {
             String value = repository.value();
-            repositoryName = StringUtils.isEmpty(value)? beanName:value;
+            repositoryName = StringUtils.isEmpty(value) ? beanName : value;
         }
-        repositoryMap.put(repositoryName,targetBean);
+        repositoryMap.put(repositoryName, targetBean);
         return true;
     }
 
     private boolean handleService(Class clazz, Object targetBean, String beanName) {
         Service service = (Service) clazz.getAnnotation(Service.class);
         String serviceName = null;
-        if(service!=null){
+        if (service != null) {
             String value = service.value();
-            serviceName = StringUtils.isEmpty(value)? beanName:value;
+            serviceName = StringUtils.isEmpty(value) ? beanName : value;
         }
-        serviceMap.put(serviceName,targetBean);
+        serviceMap.put(serviceName, targetBean);
         return true;
     }
 
     private boolean handleController(Class clazz, Object targetBean, String beanName) throws IOException {
         Controller controller = (Controller) clazz.getAnnotation(Controller.class);
         String controllerName = null;
-        if(controller!=null){
+        if (controller != null) {
             String value = controller.value();
-            controllerName = StringUtils.isEmpty(value)? beanName:value;
+            controllerName = StringUtils.isEmpty(value) ? beanName : value;
         }
-        controllerMap.put(controllerName,targetBean);
-        analyseRequestMapping(clazz,targetBean,controllerName);
+        controllerMap.put(controllerName, targetBean);
+        analyseRequestMapping(clazz, targetBean, controllerName);
         return true;
     }
 
@@ -291,32 +326,33 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
         String beanName = null;
         if (component != null) {
             beanName = component.value();
-            if (StringUtils.isEmpty(beanName)) {
-                beanName = firstCharLower(clazz.getName());
-            }
+        }
+        if (StringUtils.isEmpty(beanName)) {
+            beanName = firstCharLower(clazz.getSimpleName());
         }
         targetBean = createProxyBean(targetBean);
         beanMap.put(beanName, targetBean);
-        for(Class type:clazz.getInterfaces()){
-            beanMapByType.put(type,targetBean);
+        for (Class type : clazz.getInterfaces()) {
+            beanMapByType.put(type, targetBean);
         }
+        beanMapByType.put(clazz, targetBean);
         return beanName;
     }
 
     private Object createProxyBean(Object targetBean) {
         Class clazz = targetBean.getClass();
         //如果目标类有实现接口，则使用JDK创建动态代理
-        if(clazz.getInterfaces()!=null){
-            for(AspectImpl asp : aspectList){
-                JavaDynamicProxy jdp = new JavaDynamicProxy(targetBean,asp);
-                targetBean = Proxy.newProxyInstance(clazz.getClassLoader(),clazz.getInterfaces(),jdp);
+        if (clazz.getInterfaces() != null && clazz.getInterfaces().length > 0) {
+            for (AspectImpl asp : aspectList) {
+                JavaDynamicProxy jdp = new JavaDynamicProxy(targetBean, asp);
+                targetBean = Proxy.newProxyInstance(clazz.getClassLoader(), clazz.getInterfaces(), jdp);
             }
         }
         //如果没有实现接口，则使用CGLIB创建代理
-        else{
-            for(AspectImpl asp : aspectList){
+        else {
+            for (AspectImpl asp : aspectList) {
                 CglibProxy clb = new CglibProxy();
-                targetBean = clb.getInstance(targetBean,asp);
+                targetBean = CglibProxy.getInstance(clb,targetBean, asp);
             }
         }
         return targetBean;
@@ -339,10 +375,10 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
         List<MethodNode> methodNodes = cn.methods;
 
         for (Method method : methods) {
-            MethodNode methodNode = getMethodNode(methodNodes,method);
-            String[] paraNames = new String[methodNode.localVariables.size()-1];
+            MethodNode methodNode = getMethodNode(methodNodes, method);
+            String[] paraNames = new String[methodNode.localVariables.size() - 1];
             for (int i = 1; i < methodNode.localVariables.size(); i++) {
-                paraNames[i-1] = ((LocalVariableNode)methodNode.localVariables.get(i)).name;
+                paraNames[i - 1] = ((LocalVariableNode) methodNode.localVariables.get(i)).name;
             }
             RequestMapping rmMethod = method.getAnnotation(RequestMapping.class);
             String finalUrl = rmMethod.value();
@@ -350,7 +386,7 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
                 finalUrl = method.getName();
             if (StringUtils.isNotEmpty(baseUrl))
                 finalUrl = baseUrl + finalUrl;
-            RequestMapEntry rme = new RequestMapEntry(finalUrl, targetObj, method,paraNames);
+            RequestMapEntry rme = new RequestMapEntry(finalUrl, targetObj, method, paraNames);
             requestUrlMap.put(finalUrl, rme);
         }
     }
@@ -358,13 +394,13 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
 
     private String firstCharLower(String name) {
         char[] temp = name.toCharArray();
-        if(temp[0]>='A' && temp[0]<='Z'){
+        if (temp[0] >= 'A' && temp[0] <= 'Z') {
             temp[0] += 32;
         }
         return new String(temp);
     }
 
-    public RequestMapEntry getRequestMapEntry(String url){
+    public RequestMapEntry getRequestMapEntry(String url) {
         return requestUrlMap.get(url);
     }
 }
