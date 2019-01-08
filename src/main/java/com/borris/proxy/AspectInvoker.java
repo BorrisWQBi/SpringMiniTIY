@@ -1,26 +1,21 @@
 package com.borris.proxy;
 
-import com.borris.annotation.*;
+import com.sun.xml.internal.txw2.IllegalAnnotationException;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.tools.ant.taskdefs.condition.Or;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
-public class AspectImpl implements Comparable<AspectImpl> {
+public class AspectInvoker {
 
     @Getter
     @Setter
-    private Object targetAspect;
-
+    Map<Class , Object> targetAspectByType;
     @Getter
     @Setter
-    private int order;
-
+    List<AspectElement> aspectEleList;
     @Getter
     @Setter
     private List<Method> beforeMethodList;
@@ -34,46 +29,35 @@ public class AspectImpl implements Comparable<AspectImpl> {
     @Setter
     private MethodInvoker aroundMethod;
 
-    public AspectImpl(Class aspectClass) throws IllegalAccessException, InstantiationException {
-        if (!aspectClass.isAnnotationPresent(Aspect.class)) {
-            throw new UnsupportedOperationException("class " + aspectClass.toString() + " is not an aspect class");
-        }
-        Order orderAnno = (Order) aspectClass.getAnnotation(Order.class);
-        if(orderAnno != null){
-            order = orderAnno.value();
-        }else{
-            order=-1;
-        }
-        Method[] allMethod = aspectClass.getDeclaredMethods();
-        beforeMethodList = Arrays.stream(allMethod).filter(method -> method.isAnnotationPresent(Before.class)).collect(Collectors.toList());
-        aroundMethodList = Arrays.stream(allMethod).filter(method -> method.isAnnotationPresent(Around.class)).collect(Collectors.toList());
-        afterMethodList = Arrays.stream(allMethod).filter(method -> method.isAnnotationPresent(After.class)).collect(Collectors.toList());
-
-        this.targetAspect = aspectClass.newInstance();
+    public AspectInvoker(List<AspectElement> aspectEleList){
+        this.aspectEleList = aspectEleList;
+        targetAspectByType = new HashMap<>(aspectEleList.size());
+        beforeMethodList = new ArrayList<>();
+        afterMethodList = new ArrayList<>();
+        aroundMethodList = new ArrayList<>();
+        buildAspectProxy();
     }
 
-    @Override
-    public int compareTo(AspectImpl o) {
-        //如果order小于0，则优先级最低
-        if (this.order < 0)
-            return 1;
-        if (this.order > o.order)
-            return 1;
-        if (this.order == o.order)
-            return 0;
-        return -1;
+    private void buildAspectProxy() {
+        if (aspectEleList != null && !aspectEleList.isEmpty()){
+            aspectEleList.forEach(ae -> {
+                targetAspectByType.put(ae.getTargetAspect().getClass(),ae.getTargetAspect());
+                beforeMethodList.addAll(ae.getBeforeMethodList());
+                afterMethodList.addAll(ae.getAfterMethodList());
+                aroundMethodList.addAll(ae.getAroundMethodList());
+            });
+            buildAroundStacks();
+        }
     }
 
     public void invokeBefore(Method targetMethod) {
         if (beforeMethodList != null && !beforeMethodList.isEmpty()) {
             beforeMethodList.forEach(beforeMethod -> {
                 Object[] args = new Object[beforeMethod.getParameterTypes().length];
-                int idx = hasMatchType(beforeMethod.getParameterTypes(), targetMethod);
-                if (idx >= 0)
-                    args[idx] = targetMethod;
+                args = hasMatchType(beforeMethod.getParameterTypes(), targetMethod,args);
                 beforeMethod.setAccessible(true);
                 try {
-                    beforeMethod.invoke(targetAspect, args);
+                    beforeMethod.invoke(targetAspect(beforeMethod.getDeclaringClass()), args);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -81,16 +65,18 @@ public class AspectImpl implements Comparable<AspectImpl> {
         }
     }
 
+    public Object targetAspect(Class c){
+        return targetAspectByType.get(c);
+    }
+
     public void invokeAfter(Method targetMethod) {
         if (afterMethodList != null && !afterMethodList.isEmpty()) {
             afterMethodList.forEach(afterMethod -> {
                 Object[] args = new Object[afterMethod.getParameterTypes().length];
-                int idx = hasMatchType(afterMethod.getParameterTypes(), targetMethod);
-                if (idx >= 0)
-                    args[idx] = targetMethod;
+                args = hasMatchType(afterMethod.getParameterTypes(), targetMethod, args);
                 afterMethod.setAccessible(true);
                 try {
-                    afterMethod.invoke(targetAspect, args);
+                    afterMethod.invoke(targetAspect(afterMethod.getDeclaringClass()), args);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -110,16 +96,18 @@ public class AspectImpl implements Comparable<AspectImpl> {
         return result;
     }
 
-    private int hasMatchType(Class<?>[] parameterTypes, Method targetMethod) {
+    private Object[] hasMatchType(Class<?>[] parameterTypes, Method targetMethod, Object[] args) {
         for (int i = 0; i < parameterTypes.length; i++) {
             Class clazz = parameterTypes[i];
-            if (clazz.equals(targetMethod.getClass()))
-                return i;
+            if (clazz.equals(targetMethod.getClass())){
+                args[i] = targetMethod;
+                break;
+            }
         }
-        return -1;
+        return args;
     }
 
-    public void buildAroundStacks() {
+    public void buildAroundStacks() throws IllegalFormatException {
         if (aroundMethodList != null && !aroundMethodList.isEmpty()) {
             int idx = aroundMethodList.size() - 1;
             //先把最底层的target放进去
@@ -127,7 +115,13 @@ public class AspectImpl implements Comparable<AspectImpl> {
             MethodInvoker mi = null;
             while (idx >= 0) {
                 tempMethod = aroundMethodList.get(idx);
-                mi = new MethodInvoker(targetAspect, tempMethod, mi);
+                //around方法没有参数时非法
+                if (tempMethod.getParameterTypes().length == 0)
+                    throw new IllegalAnnotationException("can't build around method without parameters");
+                //around方法参数部位methodInvoker时非法
+                if (!MethodInvoker.class.equals(tempMethod.getParameterTypes()[0]))
+                    throw new IllegalAnnotationException("can't build around method without parameters");
+                mi = new MethodInvoker(targetAspect(tempMethod.getDeclaringClass()), tempMethod, mi);
                 idx--;
             }
             this.aroundMethod = mi;

@@ -8,19 +8,16 @@ import java.lang.reflect.Method;
 
 public class CglibProxy implements MethodInterceptor {
     private Object targetBean;
-    private AspectImpl aspectObj;
+    private AspectInvoker aspectObj;
 
-    public static Object getInstance(CglibProxy clb, Object targetObject, AspectImpl aspectObj) {
-        clb.targetBean = targetObject;
+    public Object getInstance(Object targetObject, AspectInvoker aspectObj) {
+        this.targetBean = targetObject;
         Enhancer eh = new Enhancer();
-        eh.setSuperclass(clb.targetBean.getClass());
-        eh.setCallback(clb);
+        eh.setSuperclass(this.targetBean.getClass());
+        eh.setCallback(this);
         Object proxyObject = eh.create();
 
-        clb.aspectObj = aspectObj;
-        if (clb.aspectObj != null) {
-            clb.aspectObj.buildAroundStacks();
-        }
+        this.aspectObj = aspectObj;
 
         return proxyObject;
     }
@@ -31,8 +28,7 @@ public class CglibProxy implements MethodInterceptor {
         Object result;
         if (aspectObj != null) {
             aspectObj.invokeBefore(method);
-            result = proxy.invokeSuper(obj,args);
-//            result = aspectObj.invokeAround(targetBean, method, args);
+            result = aspectObj.invokeAround(targetBean, method, args);
             aspectObj.invokeBefore(method);
         } else {
             result = method.invoke(targetBean, args);

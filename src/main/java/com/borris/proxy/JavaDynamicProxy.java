@@ -5,14 +5,11 @@ import java.lang.reflect.Method;
 
 public class JavaDynamicProxy implements InvocationHandler {
     private Object targetBean;
-    private AspectImpl aspectObj;
+    private AspectInvoker aspectObj;
 
-    public JavaDynamicProxy(Object targetBean, AspectImpl aspectObj) {
+    public JavaDynamicProxy(Object targetBean, AspectInvoker aspectObj) {
         this.targetBean = targetBean;
         this.aspectObj = aspectObj;
-        if(this.aspectObj!=null){
-            this.aspectObj.buildAroundStacks();
-        }
     }
 
     @Override
@@ -21,7 +18,7 @@ public class JavaDynamicProxy implements InvocationHandler {
         if(aspectObj!=null) {
             aspectObj.invokeBefore(method);
             result = aspectObj.invokeAround(targetBean, method, args);
-            aspectObj.invokeBefore(method);
+            aspectObj.invokeAfter(method);
         }else{
             result = method.invoke(targetBean,args);
         }

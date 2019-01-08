@@ -2,11 +2,13 @@ package com.factory;
 
 import com.borris.annotation.*;
 import com.borris.context.ApplicationContext;
-import com.borris.proxy.AspectImpl;
+import com.borris.proxy.AspectElement;
+import com.borris.proxy.AspectInvoker;
 import com.borris.proxy.CglibProxy;
 import com.borris.proxy.JavaDynamicProxy;
 import com.borris.utils.LambdaExceptionHandler;
 import com.borris.utils.Utils;
+import com.sun.istack.internal.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +57,12 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
     private List<Class> aspectClassList;
     @Getter
     @Setter
-    private List<AspectImpl> aspectList;
+    private List<AspectElement> aspectList;
+
+    @Getter
+    @Setter
+    @Nullable
+    AspectInvoker aspectInvoker;
 
     private AnnotationBeanFactory() {
         beanMap = new HashMap<String, Object>();
@@ -64,8 +71,9 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
         serviceMap = new HashMap<String, Object>();
         repositoryMap = new HashMap<String, Object>();
         requestUrlMap = new HashMap<String, RequestMapEntry>();
-        aspectList = new ArrayList<AspectImpl>();
+        aspectList = new ArrayList<AspectElement>();
         aspectClassList = new ArrayList<Class>();
+        aspectInvoker = null;
     }
 
     public static AnnotationBeanFactory getInstance() {
@@ -108,6 +116,8 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
                     .collect(Collectors.toList());
             //4.找到aspect注解标记类，并初始化代理接口列表
             aspectList = initAspectList(aspectClassList);
+            if(!aspectList.isEmpty())
+                aspectInvoker = new AspectInvoker(aspectList);
             //5.初始化所有bean 并创建代理
             initBeansByAnno();
         } catch (Exception e) {
@@ -138,15 +148,15 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
      * 设定aspect接口的规范是指实现方法，并且里面的before after方法只接收切点信息作为参数
      * @param aspectClassList
      */
-    private List<AspectImpl> initAspectList(List<Class> aspectClassList) {
+    private List<AspectElement> initAspectList(List<Class> aspectClassList) {
         if(aspectClassList.isEmpty()){
             return new ArrayList<>();
         }
-        List<AspectImpl> aspectList = new ArrayList<>();
+        List<AspectElement> aspectList = new ArrayList<>();
         aspectClassList.forEach(LambdaExceptionHandler.throwingConsumerWrapper(aspectClass ->
-                aspectList.add(new AspectImpl(aspectClass))
+                aspectList.add(new AspectElement(aspectClass))
         ));
-        AspectImpl[] sortArray = new AspectImpl[aspectList.size()];
+        AspectElement[] sortArray = new AspectElement[aspectList.size()];
         sortArray = aspectList.toArray(sortArray);
         Arrays.sort(sortArray);
         aspectList.clear();
@@ -288,6 +298,9 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
     }
 
     private boolean handleRepository(Class clazz, Object targetBean, String beanName) {
+        if(!Utils.checkHasAnnotation(clazz,Repository.class)){
+            return false;
+        }
         Repository repository = (Repository) clazz.getAnnotation(Repository.class);
         String repositoryName = null;
         if (repository != null) {
@@ -299,6 +312,9 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
     }
 
     private boolean handleService(Class clazz, Object targetBean, String beanName) {
+        if(!Utils.checkHasAnnotation(clazz,Service.class)){
+            return false;
+        }
         Service service = (Service) clazz.getAnnotation(Service.class);
         String serviceName = null;
         if (service != null) {
@@ -310,6 +326,9 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
     }
 
     private boolean handleController(Class clazz, Object targetBean, String beanName) throws IOException {
+        if(!Utils.checkHasAnnotation(clazz,Controller.class)){
+            return false;
+        }
         Controller controller = (Controller) clazz.getAnnotation(Controller.class);
         String controllerName = null;
         if (controller != null) {
@@ -341,26 +360,26 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
 
     private Object createProxyBean(Object targetBean) {
         Class clazz = targetBean.getClass();
+        //代理方法为空则不代理
+        if (aspectInvoker == null) {
+            return targetBean;
+        }
         //如果目标类有实现接口，则使用JDK创建动态代理
         if (clazz.getInterfaces() != null && clazz.getInterfaces().length > 0) {
-            for (AspectImpl asp : aspectList) {
-                JavaDynamicProxy jdp = new JavaDynamicProxy(targetBean, asp);
+                JavaDynamicProxy jdp = new JavaDynamicProxy(targetBean, aspectInvoker);
                 targetBean = Proxy.newProxyInstance(clazz.getClassLoader(), clazz.getInterfaces(), jdp);
-            }
         }
         //如果没有实现接口，则使用CGLIB创建代理
         else {
-            for (AspectImpl asp : aspectList) {
-                CglibProxy clb = new CglibProxy();
-                targetBean = CglibProxy.getInstance(clb,targetBean, asp);
-            }
+            CglibProxy clb = new CglibProxy();
+            targetBean = clb.getInstance(targetBean, aspectInvoker);
         }
         return targetBean;
     }
 
     private void analyseRequestMapping(Class clazz, Object targetObj, String controllerName) throws IOException {
         String baseUrl = "";
-        RequestMapping rmBase = targetObj.getClass().getAnnotation(RequestMapping.class);
+        RequestMapping rmBase = (RequestMapping) clazz.getAnnotation(RequestMapping.class);
         if (rmBase != null) {
             if (StringUtils.isNotEmpty(rmBase.value())) {
                 baseUrl = rmBase.value();

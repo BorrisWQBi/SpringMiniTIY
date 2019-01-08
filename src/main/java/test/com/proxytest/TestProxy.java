@@ -1,6 +1,5 @@
 package test.com.proxytest;
 
-import com.borris.proxy.AspectImpl;
 import com.borris.proxy.JavaDynamicProxy;
 import com.borris.proxy.MethodInvoker;
 
@@ -30,7 +29,7 @@ public class TestProxy {
             milist.add(around);
         }
 
-//        AspectImpl ai = new AspectImpl();
+//        AspectElement ai = new AspectElement();
 //        ai.setAroundMethodList(milist);
 //        ai.setTargetAspect(aspect);
 //        ai.buildAroundStacks();
