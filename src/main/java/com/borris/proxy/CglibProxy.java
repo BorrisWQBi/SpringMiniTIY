@@ -27,9 +27,7 @@ public class CglibProxy implements MethodInterceptor {
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         Object result;
         if (aspectObj != null) {
-            aspectObj.invokeBefore(method);
-            result = aspectObj.invokeAround(targetBean, method, args);
-            aspectObj.invokeBefore(method);
+            result = aspectObj.invoke(targetBean, method, args);
         } else {
             result = method.invoke(targetBean, args);
         }

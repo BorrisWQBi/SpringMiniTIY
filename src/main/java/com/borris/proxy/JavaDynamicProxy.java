@@ -16,9 +16,7 @@ public class JavaDynamicProxy implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Object result;
         if(aspectObj!=null) {
-            aspectObj.invokeBefore(method);
-            result = aspectObj.invokeAround(targetBean, method, args);
-            aspectObj.invokeAfter(method);
+            result = aspectObj.invoke(targetBean, method, args);
         }else{
             result = method.invoke(targetBean,args);
         }

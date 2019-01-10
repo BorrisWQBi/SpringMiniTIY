@@ -153,8 +153,11 @@ public class AnnotationBeanFactory extends AbstractBeanFactory {
             return new ArrayList<>();
         }
         List<AspectElement> aspectList = new ArrayList<>();
-        aspectClassList.forEach(LambdaExceptionHandler.throwingConsumerWrapper(aspectClass ->
-                aspectList.add(new AspectElement(aspectClass))
+        aspectClassList.forEach(LambdaExceptionHandler.throwingConsumerWrapper(aspectClass -> {
+                    AspectElement ae = new AspectElement(aspectClass);
+                    ae.buildAroundStacks();
+                    aspectList.add(ae);
+                }
         ));
         AspectElement[] sortArray = new AspectElement[aspectList.size()];
         sortArray = aspectList.toArray(sortArray);
